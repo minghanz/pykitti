@@ -186,15 +186,33 @@ class raw:
         data['R_rect_20'] = R_rect_20
         data['R_rect_30'] = R_rect_30
 
-        # Compute the rectified extrinsics from cam0 to camN
+        # # Compute the rectified extrinsics from cam0 to camN
+        # T0 = np.eye(4)
+        # T0[0, 3] = P_rect_00[0, 3] / P_rect_00[0, 0]
+        # T1 = np.eye(4)
+        # T1[0, 3] = P_rect_10[0, 3] / P_rect_10[0, 0]
+        # T2 = np.eye(4)
+        # T2[0, 3] = P_rect_20[0, 3] / P_rect_20[0, 0]
+        # T3 = np.eye(4)
+        # T3[0, 3] = P_rect_30[0, 3] / P_rect_30[0, 0]
+
+        # Compute the rectified extrinsics from cam0 to camN (consider 3d offset)
         T0 = np.eye(4)
-        T0[0, 3] = P_rect_00[0, 3] / P_rect_00[0, 0]
+        T0[2, 3] = P_rect_00[2, 3] / P_rect_00[2, 2]
+        T0[1, 3] = ( P_rect_00[1, 3] - T0[2, 3] * P_rect_00[1, 2] ) / P_rect_00[1, 1]
+        T0[0, 3] = ( P_rect_00[0, 3] - T0[2, 3] * P_rect_00[0, 2] ) / P_rect_00[0, 0]
         T1 = np.eye(4)
-        T1[0, 3] = P_rect_10[0, 3] / P_rect_10[0, 0]
+        T1[2, 3] = P_rect_10[2, 3] / P_rect_10[2, 2]
+        T1[1, 3] = ( P_rect_10[1, 3] - T1[2, 3] * P_rect_10[1, 2] ) / P_rect_10[1, 1]
+        T1[0, 3] = ( P_rect_10[0, 3] - T1[2, 3] * P_rect_10[0, 2] ) / P_rect_10[0, 0]
         T2 = np.eye(4)
-        T2[0, 3] = P_rect_20[0, 3] / P_rect_20[0, 0]
+        T2[2, 3] = P_rect_20[2, 3] / P_rect_20[2, 2]
+        T2[1, 3] = ( P_rect_20[1, 3] - T2[2, 3] * P_rect_20[1, 2] ) / P_rect_20[1, 1]
+        T2[0, 3] = ( P_rect_20[0, 3] - T2[2, 3] * P_rect_20[0, 2] ) / P_rect_20[0, 0]
         T3 = np.eye(4)
-        T3[0, 3] = P_rect_30[0, 3] / P_rect_30[0, 0]
+        T3[2, 3] = P_rect_30[2, 3] / P_rect_30[2, 2]
+        T3[1, 3] = ( P_rect_30[1, 3] - T3[2, 3] * P_rect_30[1, 2] ) / P_rect_30[1, 1]
+        T3[0, 3] = ( P_rect_30[0, 3] - T3[2, 3] * P_rect_30[0, 2] ) / P_rect_30[0, 0]
 
         # Compute the velodyne to rectified camera coordinate transforms
         data['T_cam0_velo'] = T0.dot(R_rect_00.dot(T_cam0unrect_velo))
